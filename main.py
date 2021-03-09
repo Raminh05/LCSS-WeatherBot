@@ -32,4 +32,4 @@ async def temp(ctx): # "w/temp"
     else:
         await ctx.send("The temperature is " + temp + " in London, Ontario. Condition: " + condition)
 
-client.run('ODE4NTc5MjY2MzA4MDE0MTQw.YEaHWQ.g_6CyUqjlVG9R-EDCdTyygx9h3w') # Token (if re-gen, plz replace it.)
+client.run('') # Token (if re-gen, plz replace it.)
