@@ -1,5 +1,5 @@
 # London-Ontario-Discord-WeatherBot
-It's a weather bot, that runs in a Discord server! Gathers data from Environment Data.
+It's a weather bot, that runs in a Discord server! Gathers data from Environment Canada.
 
 Planned Features:
 - Status (rich presence) for the bot (it will show: "Making Meatballs")
