@@ -1,8 +1,14 @@
 import discord
 from get_data import get_temp, get_condition, get_data
 from discord.ext import commands
+import os
 
 client = commands.Bot(command_prefix = 'w/') # Defines the command prefix to be "w/"
+
+# Gets API key
+with open(".env", encoding="utf-8") as f:
+    api_key = f.read()
+    f.close()
 
 @client.event
 async def on_ready(): # When the bot and the Discord API are ready, print this command...
@@ -32,4 +38,4 @@ async def temp(ctx): # "w/temp"
     else:
         await ctx.send("The temperature is " + temp + " in London, Ontario. Condition: " + condition)
 
-client.run('') # Token (if re-gen, plz replace it.)
+client.run(api_key)
