@@ -57,7 +57,7 @@ async def temp(ctx): # "w/temp"
     condition = get_condition(container) # Calls to get weather condition
 
     # Changes channel name to display temperature stats readily (new feature: 03/12)
-    channel = client.get_channel(819952301389119489)
+    channel = client.get_channel(<insert channel_id here>)
     await channel.edit(name="Temperature: " + temp)
 
     image_url = get_weather_icon(condition)
