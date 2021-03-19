@@ -1,8 +1,9 @@
 import discord
-from get_data import get_temp, get_condition, get_data
+from get_data import get_temp, get_condition, get_data, get_icon
 from discord.ext import commands
 import os
 from datetime import datetime
+import time
 
 client = commands.Bot(command_prefix = 'w/', description="") # Defines the command prefix to be "w/"
 
@@ -15,7 +16,7 @@ with open(".env", encoding="utf-8") as f:
 async def on_ready(): # When the bot and the Discord API are ready, print this command...
     await client.change_presence(activity=discord.Game(name="with the weather"))
     print('Bot is on!')
-
+    
 @client.command()
 async def ping(ctx): # ctx = context, the function name IS THE context. So in this function: "ping" IS the context. So, the user must do "w/ping" to activate this command. Same applies for the rest.
     await ctx.send(f'Pong! {round(client.latency * 1000)}ms')
@@ -30,23 +31,6 @@ async def shutdown(ctx): # Shutdown command for the bot to logout of discord
     await ctx.send("Shutting down...")
     await ctx.bot.logout()
 
-def get_weather_icon(condition): # New Feature (03/12)
-    if condition == "Sunny" or "Clear":
-        image_url = "https://weather.gc.ca/weathericons/00.gif"
-        return image_url
-    elif condition == "Mainly Sunny" or "A mix of sun and cloud" or "A few clouds" or "Partly Cloudy":
-        image_url = "https://weather.gc.ca/weathericons/01.gif"
-        return image_url
-    elif condition == "Mainly Cloudy":
-        image_url = "https://weather.gc.ca/weathericons//03.gif"
-        return image_url
-    elif condition == "Cloudy":
-        image_url = "https://weather.gc.ca/weathericons/10.gif"
-        return image_url
-    else:
-        image_url = "https://lh3.googleusercontent.com/proxy/dwmrzvnXgrGRbDuGIK_ZMU5sseh0bAkqg1_C3lH0Pfo2YBUrnfjrVXH5SerRs6rpSM52WVIEMfPGE6nVnR4BMM0Kk9_flPfd0esyPwxKZnoU3hhCHfrkCmMCTPSqiiAwc1-CVYdzYwiy"
-        return image_url
-
 @client.command()
 async def temp(ctx): # "w/temp"
     # Gets all the variables needed
@@ -57,10 +41,10 @@ async def temp(ctx): # "w/temp"
     condition = get_condition(container) # Calls to get weather condition
 
     # Changes channel name to display temperature stats readily (new feature: 03/12)
-    channel = client.get_channel(<insert channel_id here>)
+    channel = client.get_channel(822198652398600242)
     await channel.edit(name="Temperature: " + temp)
 
-    image_url = get_weather_icon(condition)
+    image_url = get_icon(container) # calls get_icon to get weather icon according to the condition (Update 03/18)
 
     embedVar = discord.Embed(title="Weather for London, ON", description="Source: Environment Canada", color=0x0000ff) # Moved from test embed function
     
@@ -70,6 +54,8 @@ async def temp(ctx): # "w/temp"
     embedVar.set_footer(text="Data retreived at: " + current_time)
 
     await ctx.send(embed=embedVar)
+    print("Sucessful!")
+    
 
 client.run(api_key)
 

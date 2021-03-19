@@ -23,6 +23,14 @@ def get_condition(container):
 def get_date_of_data(container):
     pass # W.I.P. (find the appropiate element for the date somewhere on the site later)
 
+def get_icon(container): # Conditional weather icons. Added to replace stupid if-else statement. Now gets weather icon from html elements
+    prefex_url = "https://weather.gc.ca/"
+    icon = container.find("img",{"class":"center-block mrgn-tp-md"})
+    icon_url = prefex_url + icon["src"]
+    return icon_url
+   
+
+
 
 
     
