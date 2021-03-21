@@ -13,3 +13,4 @@ Prerequisities:
 - BeautifulSoup
 - Discord.py
 - Datetime
+- Json
