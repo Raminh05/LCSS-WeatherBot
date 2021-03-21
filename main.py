@@ -1,5 +1,5 @@
 import discord
-from get_data import get_temp, get_condition, get_data, get_icon
+from get_data import get_city, get_response, parse_response
 from discord.ext import commands
 import os
 from datetime import datetime
@@ -32,21 +32,24 @@ async def shutdown(ctx): # Shutdown command for the bot to logout of discord
     await ctx.bot.logout()
 
 @client.command()
-async def temp(ctx): # "w/temp"
+async def temp(ctx, city_arg): # "w/temp"
     # Gets all the variables needed
     now = datetime.now() # Gets time
     current_time = now.strftime("%H:%M") # Parses time to only be in hours and minutes
-    container = get_data() # Calls the get_data function in the get_data file
-    temp = get_temp(container) # Calls to get the temperature data from the get_data file
-    condition = get_condition(container) # Calls to get weather condition
+    complete_url = get_city(city_arg) # Calls the get_city and fills it in with the command arguement from the user
+    x = get_response(complete_url) # API call
+    data = parse_response(x) # Parses json data from API call
 
-    # Changes channel name to display temperature stats readily (new feature: 03/12)
-    channel = client.get_channel(822198652398600242)
-    await channel.edit(name="Temperature: " + temp)
+    condition = data[0] # Gets weather condition from json data
+    temp = data[1] # Gets temperature from json data
 
-    image_url = get_icon(container) # calls get_icon to get weather icon according to the condition (Update 03/18)
+    if city_arg == "London, CA":     # Changes channel name to display temperature stats readily only if requested city is London, ON (new feature: 03/12) 
+        channel = client.get_channel(822198652398600242)
+        await channel.edit(name="Temperature: " + temp)
 
-    embedVar = discord.Embed(title="Weather for London, ON", description="Source: Environment Canada", color=0x0000ff) # Moved from test embed function
+    image_url = data[2] # calls get_icon to get weather icon according to the condition (Update 03/18)
+
+    embedVar = discord.Embed(title="Weather for " + city_arg, description="Source: OpenWeatherMap", color=0x0000ff) # Moved from test embed function
     
     embedVar.add_field(name="Temperature", value=temp, inline=False)
     embedVar.set_image(url=image_url)
@@ -55,6 +58,11 @@ async def temp(ctx): # "w/temp"
 
     await ctx.send(embed=embedVar)
     print("Sucessful!")
+
+@temp.error
+async def temp_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Missing arguement: Please type in the City Name!")
     
 
 client.run(api_key)
