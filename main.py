@@ -62,8 +62,31 @@ async def temp(ctx, city_arg): # "w/temp"
 @temp.error
 async def temp_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Missing arguement: Please type in the City Name!")
-    
+        await ctx.send("Missing arguement: Please type in the City Name! Defaulting to London, Ontario...")
+
+        now = datetime.now() # Gets time
+        current_time = now.strftime("%H:%M") # Parses time to only be in hours and minutes
+        x = get_response("http://api.openweathermap.org/data/2.5/weather?q=London,%20CA&units=metric&appid=b4f6dd2094bdd5048ce9025a901553df") # API call
+        data = parse_response(x) # Parses json data from API call
+
+        condition = data[0] # Gets weather condition from json data
+        temp = data[1] # Gets temperature from json data
+
+           # Changes channel name to display temperature stats readily only if requested city is London, ON (new feature: 03/12) 
+        channel = client.get_channel(822198652398600242)
+        await channel.edit(name="Temperature: " + temp)
+
+        image_url = data[2] # calls get_icon to get weather icon according to the condition (Update 03/18)
+
+        embedVar = discord.Embed(title="Weather for London, Ontario", description="Source: OpenWeatherMap", color=0x0000ff) # Moved from test embed function
+        
+        embedVar.add_field(name="Temperature", value=temp, inline=False)
+        embedVar.set_image(url=image_url)
+        embedVar.add_field(name="Condition", value=condition, inline=False)
+        embedVar.set_footer(text="Data retreived at: " + current_time)
+
+        await ctx.send(embed=embedVar)
+        print("Sucessful!")
 
 client.run(api_key)
 
