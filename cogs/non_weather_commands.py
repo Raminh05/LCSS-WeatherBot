@@ -12,7 +12,7 @@ class non_weather_commands(commands.Cog):
     async def on_ready(self):
         await self.client.change_presence(activity=discord.Game(name="with the weather")) # Bot ready > print message / send online message
         channel = self.client.get_channel(789619349903507456)
-        await channel.send("Online and ready to ~~shill to sponsors~~ tell the weather!") 
+        await channel.send("I love and the weather.") 
         print('Bot is on!')
     
     # w/ping. Returns latency time.
