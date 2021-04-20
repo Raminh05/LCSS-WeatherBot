@@ -8,8 +8,8 @@ from urllib.request import urlopen as uRequest
 import sys
 sys.path.insert(1, '/home/pi/Desktop/Test/WeatherBot') # Importing modules from other directories
 
-api_key = "b4f6dd2094bdd5048ce9025a901553df"
-api_key_geo = "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
+api_key = "" # OpenWeatherMap API key
+api_key_geo = "" # MapBox API Key
 base_url_city = "http://api.openweathermap.org/data/2.5/weather?"
 base_url_geocode = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
 
