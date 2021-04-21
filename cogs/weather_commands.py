@@ -8,8 +8,8 @@ from urllib.request import urlopen as uRequest
 import sys
 sys.path.insert(1, '/home/pi/Desktop/Test/WeatherBot') # Importing modules from other directories
 
-api_key = "" # OpenWeatherMap API key
-api_key_geo = "" # MapBox API Key
+api_key = "b4f6dd2094bdd5048ce9025a901553df"
+api_key_geo = "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
 base_url_city = "http://api.openweathermap.org/data/2.5/weather?"
 base_url_geocode = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
 
@@ -43,6 +43,7 @@ def parse_response(response_geocoded):
     z = response_geocoded["weather"]
     w = response_geocoded["sys"]
     cords = response_geocoded["coord"]
+    city_name = response_geocoded["name"]
 
     country_code = w["country"]
     condition = z[0]["description"]
@@ -50,7 +51,7 @@ def parse_response(response_geocoded):
     temp = str(y["temp"]) + chr(176) + "C"
     full_icon_url = "http://openweathermap.org/img/wn/" + icon + "@2x.png"
     
-    return condition, temp, full_icon_url, country_code, cords
+    return condition, temp, full_icon_url, country_code, cords, city_name
     
 # -- Parses OpenWeatherMap for London, ON -- #
 def parse_response_london(x):
@@ -107,9 +108,9 @@ def embed_london():
 
     # -- Conditionnal embed headers (time of day) -- #
     if int(hour) >= 16 and int(hour) > 0:
-        embedVar.add_field(name="High for tomorrow:", value=temp_high, inline=False)
+        embedVar.add_field(name="High for Tomorrow:", value=temp_high, inline=False)
     else:
-        embedVar.add_field(name="High for today:", value=temp_high, inline=False)
+        embedVar.add_field(name="High for Today:", value=temp_high, inline=False)
 
     embedVar.add_field(name="Low for Today:", value=temp_low, inline=False)
     embedVar.set_footer(text="Data retreived at: " + current_time + " London, ON time.")
@@ -139,16 +140,19 @@ def embed_everywhere_else(city_arg, country_arg):
     image_url = data[2] # calls get_icon to get weather icon according to the condition (Update 03/18)
     country_code = data[3]
     cords = data[4]
+    city_name = data[5]
+
+    
     
 
-    embedVar = discord.Embed(title="Weather for " + city_arg + ", " + country_code, description="Source: OpenWeatherMap", color=0x0000ff) # Moved from test embed function   
+    embedVar = discord.Embed(title="Weather for " + city_name + ", " + country_code, description="Source: OpenWeatherMap", color=0x0000ff) # Moved from test embed function   
     embedVar.add_field(name="Temperature", value=temp, inline=False)
     embedVar.set_image(url=image_url)
     embedVar.add_field(name="Condition", value=condition, inline=False)
     embedVar.add_field(name="Coordinates:", value=cords, inline=False)
     embedVar.set_footer(text="Data retreived at: " + current_time + " London, ON local time.")
 
-    return embedVar
+    return embedVar, city_name
 
 # --- Start of commands section --- #
 class weather_commands(commands.Cog):
@@ -164,7 +168,17 @@ class weather_commands(commands.Cog):
         
         embedVar = embed_everywhere_else(city_arg, country_arg) # calls function from get_data
 
-        await ctx.send(embed=embedVar) # sends embed
+        # -- Let's user know if the bot couldn't find their specified location (Update: 04/21) -- # # -- embedVar[1] = city_name -- #
+        # -- Check multi-word location names / compares it with user city_arg -- #
+        city_name_split = embedVar[1].split(' ')
+
+        if city_arg in city_name_split:
+            await ctx.send("Sucessfully found the location.")
+        else:
+            await ctx.send("Hm, I couldn't find that location...Falling back to somewhere else that's as close as possible.")
+
+
+        await ctx.send(embed=embedVar[0]) # sends embed
         await ctx.send("Another day another ~~dollar~~ weather request!")
 
         print("Sucessful!")
