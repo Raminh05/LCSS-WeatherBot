@@ -8,8 +8,8 @@ from urllib.request import urlopen as uRequest
 import sys
 sys.path.insert(1, '/home/pi/Desktop/Test/WeatherBot') # Importing modules from other directories
 
-api_key = "b4f6dd2094bdd5048ce9025a901553df"
-api_key_geo = "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
+api_key = ""
+api_key_geo = ""
 base_url_city = "http://api.openweathermap.org/data/2.5/weather?"
 base_url_geocode = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
 
@@ -117,7 +117,7 @@ def make_embed(city_arg, country_arg):
     
     if city_arg == "":
         is_london = True
-        x = get_response_owm("http://api.openweathermap.org/data/2.5/weather?q=London,%20CA&units=metric&appid=b4f6dd2094bdd5048ce9025a901553df")
+        x = get_response_owm("http://api.openweathermap.org/data/2.5/weather?q=London,%20CA&units=metric&appid=")
         data = parse_response(x, is_london) # Converts json data
 
         condition = data[0].title() # Gets weather condition from json data
@@ -134,15 +134,15 @@ def make_embed(city_arg, country_arg):
     else:
         is_london = False
         if country_arg == "":
-            x = get_response_owm("http://api.openweathermap.org/data/2.5/weather?q=" + city_arg + "&units=metric&appid=b4f6dd2094bdd5048ce9025a901553df")
+            x = get_response_owm("http://api.openweathermap.org/data/2.5/weather?q=" + city_arg + "&units=metric&appid=") # OWM API KEY GOES HERE
             if x["cod"] == "404":
                 print("OWM could not find the city...falling back to Mapbox.")
-                x = get_response_geocode("https://api.mapbox.com/geocoding/v5/mapbox.places/" + city_arg + ".json?access_token=" + "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ")
+                x = get_response_geocode("https://api.mapbox.com/geocoding/v5/mapbox.places/" + city_arg + ".json?access_token=" + "") # MAPBOX API KEY GOES HERE
             else:
                 print("Sucessfully skipped Mapbox.")
 
         else:
-            x = get_response_owm("http://api.openweathermap.org/data/2.5/weather?q=" + city_arg + "," + country_arg + "&units=metric&appid=b4f6dd2094bdd5048ce9025a901553df")
+            x = get_response_owm("http://api.openweathermap.org/data/2.5/weather?q=" + city_arg + "," + country_arg + "&units=metric&appid=") # OWM API KEY GOES HERE
             if x["cod"] == "404":
                 print("OMV could not find the location...falling back to Mapbox.")
                 complete_url = get_cords(city_arg, country_arg) # Calls the get_city and fills it in with the command arguement from the user
