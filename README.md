@@ -9,7 +9,8 @@ Planned Features:
 - ~~Conditional weather icons (time and weather condition). For example, a clear weather icon that can either have a moon or sun depending on time of day.~~ (Done as of 03.18.2021)
 - Fix the UX (optimization, make country and city args OPTIONAL)
 - Print local time for specified location (instead of just doing EST/EDT)
-- For London, show weather alert in the embed if there is an alert.
+- ~~For London, show weather alert in the embed if there is an alert.~~ (Done)
+- Major code cleanup 
 
 
 Prerequisities:
