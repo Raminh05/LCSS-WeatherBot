@@ -1,4 +1,4 @@
-# London-Ontario-Discord-WeatherBot
+LCSS-WeatherBot
 It's a weather bot, that runs in a Discord server! Gathers data from Environment Canada.
 
 Planned Features:
