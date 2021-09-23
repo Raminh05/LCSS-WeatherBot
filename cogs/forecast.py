@@ -20,7 +20,7 @@ class forecast(commands.Cog):
     @commands.command()
     async def forecast(self, ctx, city, country):
         # -- OWM API KEY -- #
-        api_key = "b4f6dd2094bdd5048ce9025a901553df"
+        api_key = "" # put owm key here
         # -- Get cords -- #
         try:
             complete_url_geo = get_cords(city, country)
