@@ -8,7 +8,7 @@ from disputils import BotEmbedPaginator
 
 # -- Fetches cords for cities -- #
 def get_cords(city_name, country):
-    complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city_name + ".json?country=" + country + "&access_token=" + "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
+    complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city_name + ".json?country=" + country + "&access_token=" + "" # Put Mapbox API key in quotes
     return complete_url_geo
 
 # --- Start of commands section --- #
