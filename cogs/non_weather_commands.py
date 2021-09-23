@@ -11,7 +11,7 @@ class non_weather_commands(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         await self.client.change_presence(activity=discord.Game(name="with the weather")) # Bot ready > print message / send online message
-        channel = self.client.get_channel(789619349903507456)
+        channel = self.client.get_channel(789619349903507456) # Sends message to #bot-commands
         await channel.send("Online and ready to take commands.") 
         print('Bot is on!')
     
