@@ -1,15 +1,7 @@
-
 import discord
 from discord.ext import commands
-import os
-import sys
 import requests, json
 from disputils import BotEmbedPaginator
-
-# -- Fetches cords for cities -- #
-def get_cords(city_name, country):
-    complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city_name + ".json?country=" + country + "&access_token=" + "" # Put Mapbox API key in quotes
-    return complete_url_geo
 
 # --- Start of commands section --- #
 class forecast(commands.Cog):
@@ -18,19 +10,21 @@ class forecast(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def forecast(self, ctx, city, country):
+    async def forecast(self, ctx, city, country=""):
         # -- OWM API KEY -- #
-        api_key = "" # put owm key here
-        # -- Get cords -- #
-        try:
-            complete_url_geo = get_cords(city, country)
-            print(complete_url_geo)
-            print("[FORECAST] Sucessful fetch of Geo Weather Data")
-        except:
-            await ctx.send("Failed to fetch coordinates.")
+        api_key = "b4f6dd2094bdd5048ce9025a901553df"
 
+        # -- Get cords -- #
+        if country == "":
+            await ctx.send("No country detected. Location could be incorrect as a result.")
+            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?" + "&access_token=pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
+        else:
+            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?country=" + country + "&access_token=" + "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
+
+        print("Mapbox URL: " + complete_url_geo) # debugging purposes
+  
         try:
-            print("Parsing geo data...")
+            print("Fetching Geocoding...")
             geo = requests.get(complete_url_geo)
             x_geo = geo.json()
             main_geo_info = x_geo["features"]
@@ -40,13 +34,13 @@ class forecast(commands.Cog):
             place_name = main_geo_info[0]["place_name"]
             print("[FORECAST] Sucessful parsing of geo data...")
         except:
-            await ctx.send("[FORECAST] Failed to parse geo data...")
-            print("[FORECAST] Failed to parse geo data...")
+            await ctx.send("[FORECAST] Failed to fetch/parse geo data...")
+            raise Exception('[FORECSAT - GEODATA] Failed to fetch/parse geo data...')
 
         try:
             print("Fetching forecast data...")
             forecast_data_url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + str(latitude) + "&lon=" + str(longitude) + "&exclude=hourly,minutely,current,alerts&units=metric&appid=" + api_key
-            print(forecast_data_url)
+            print("OWM URL: " + forecast_data_url)
             response = requests.get(forecast_data_url)
             await print(response)
         except:
@@ -82,12 +76,16 @@ class forecast(commands.Cog):
         
         paginator = BotEmbedPaginator(ctx, embedList)
         await paginator.run()
+
+        await ctx.message.delete()
     
-    # Error for missing city argument.
+    # Error for missing city argument
     @forecast.error
     async def forecast_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("No location name / country code detected! No forecast is fetched.")
+            await ctx.send("No location entered! No forecast is fetched.")
+           
+            
     
 def setup(client):
     client.add_cog(forecast(client))
