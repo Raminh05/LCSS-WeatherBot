@@ -1,17 +1,14 @@
 
 import discord
 from discord.ext import commands
-import os
-import sys
 import requests, json
-import wget
 from datetime import datetime
 from urllib.request import urlopen as uRequest
 from bs4 import BeautifulSoup as soup
 
 # -- Weather functions -- #
-api_key = "" # OWM Key
-api_key_geo = "" # Mapbox API Key
+api_key = "b4f6dd2094bdd5048ce9025a901553df" # OWM Key
+api_key_geo = "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ" # Mapbox API Key
 base_url_city = "http://api.openweathermap.org/data/2.5/weather?" 
 base_url_geocode = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
 
@@ -54,7 +51,7 @@ def parse_response(owm_response, is_london):
     wind_direction = wind["deg"]
     # wind_gust = wind["gust"] (Broken as of 05/06)
 
-    if is_london == False:
+    if is_london is False:
         cords = owm_response["coord"]
         city_name = owm_response["name"]
         server_response_code = owm_response["cod"]
@@ -94,8 +91,11 @@ def get_high_low_london():
     uClient = uRequest(data_url)
     page_html = uClient.read()
     page_soup = soup(page_html, "html.parser") # Parses the HTML elements 
-    container = page_soup.find("div",{"id":"container"}) # Finds container div 
+    container = page_soup.find("div",{"id":"container"}) # Finds container div
+
     alert_banner = page_soup.find("div",{"class":"row alert-item bg-alerts"}) # Alert_banner element
+    if alert_banner is None:
+        alert_banner = page_soup.find("div",{"class":"row alert-item bg-bulletin"}) # Banner during special weather statementss
     humidity_banner = container.find("dl",{"class":"dl-horizontal wxo-conds-col3"}) # Humidity_banner element
     
     try: # -- Try to see if there is a warning from envcan -- #
@@ -224,10 +224,10 @@ def make_embed(city_arg, country_arg):
         embedVar = discord.Embed(title="Weather for London, Ontario", description="Source: OpenWeatherMap/Environment Canada", color=embed_colour) # Moved from test embed function
         
         # -- If there is an alert, direct header to Environment Canada website link
-        if alert == "No Alert!":
+        if alert == "No Alerts.":
             embedVar.add_field(name="Weather Alert", value=alert, inline=False)
         else:
-            embedVar.add_field(name="Weather Alert", value=alert + '[More info](https://weather.gc.ca/city/pages/on-137_metric_e.html)', inline=False)
+            embedVar.add_field(name="Weather Alert", value=alert + ' [More info](https://weather.gc.ca/city/pages/on-137_metric_e.html)', inline=False)
             
         embedVar.add_field(name="Temperature | Humidex:", value=str(temp) + chr(176) + "C" " | " + humidex, inline=False)
         embedVar.set_image(url=image_url)
