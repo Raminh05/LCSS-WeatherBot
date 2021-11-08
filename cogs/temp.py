@@ -7,8 +7,8 @@ from urllib.request import urlopen as uRequest
 from bs4 import BeautifulSoup as soup
 
 # -- Weather functions -- #
-api_key = "b4f6dd2094bdd5048ce9025a901553df" # OWM Key
-api_key_geo = "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ" # Mapbox API Key
+api_key = "" # OWM Key
+api_key_geo = "" # Mapbox API Key
 base_url_city = "http://api.openweathermap.org/data/2.5/weather?" 
 base_url_geocode = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
 
