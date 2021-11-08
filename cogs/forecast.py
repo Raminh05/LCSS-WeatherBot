@@ -3,10 +3,6 @@ from discord.ext import commands
 import requests, json
 from disputils import BotEmbedPaginator
 
-# --- OWM and Mapbox API keys --- #
-api_key = ""
-api_key_geo = ""
-
 # --- Start of commands section --- #
 class forecast(commands.Cog):
 
