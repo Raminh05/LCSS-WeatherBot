@@ -1,16 +1,23 @@
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import requests, json
 from datetime import datetime
 from urllib.request import urlopen as uRequest
 from bs4 import BeautifulSoup as soup
+from requests import api
+from dotenv import load_dotenv
+import os
 
-# -- Weather functions -- #
-api_key = "" # OWM Key
-api_key_geo = "" # Mapbox API Key
+# -- Variable declaration -- #
+load_dotenv()
+api_key = os.getenv("OWM_API_KEY") # OWM Key
+api_key_geo = os.getenv("MAPBOX_API_KEY") # Mapbox API Key
 base_url_city = "http://api.openweathermap.org/data/2.5/weather?" 
 base_url_geocode = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
+embed = () # Declaring embed variable for caching London,CA data
+
+# -- Weather functions -- #
 
 # -- Fetches cords for cities -- #
 def get_cords(city_name, country):
@@ -95,7 +102,11 @@ def get_high_low_london():
 
     alert_banner = page_soup.find("div",{"class":"row alert-item bg-alerts"}) # Alert_banner element
     if alert_banner is None:
-        alert_banner = page_soup.find("div",{"class":"row alert-item bg-bulletin"}) # Banner during special weather statementss
+        alert_banner = page_soup.find("div",{"class":"row alert-item bg-bulletin"}) # Banner during special weather statements
+    
+    if alert_banner is None:
+        alert_banner = page_soup.find("div",{"class":"row alert-item bg-veille"}) # Banner during weather watches
+
     humidity_banner = container.find("dl",{"class":"dl-horizontal wxo-conds-col3"}) # Humidity_banner element
     
     try: # -- Try to see if there is a warning from envcan -- #
@@ -229,7 +240,7 @@ def make_embed(city_arg, country_arg):
         else:
             embedVar.add_field(name="Weather Alert", value=alert + ' [More info](https://weather.gc.ca/city/pages/on-137_metric_e.html)', inline=False)
             
-        embedVar.add_field(name="Temperature | Humidex:", value=str(temp) + chr(176) + "C" " | " + humidex, inline=False)
+        embedVar.add_field(name="Temperature | Wind Chill:", value=str(temp) + chr(176) + "C" " | " + humidex, inline=False)
         embedVar.set_image(url=image_url)
         embedVar.add_field(name="Condition", value=condition, inline=False)
         embedVar.add_field(name="Current Wind Speed:", value=str(round(wind_spd * 3.6, 2)) + " km/h [" + wind_dir + "]", inline=False)
@@ -244,7 +255,7 @@ def make_embed(city_arg, country_arg):
         embedVar.add_field(name="Low for Today:", value=temp_low, inline=False)
         embedVar.set_footer(text="Data retreived at: " + current_time + " London, ON time.")
 
-        return embedVar, temp
+        return embedVar, temp, condition
 
     else:
         # -- Essembles embed from data -- #
@@ -271,10 +282,10 @@ class temp(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-
+        
     # w/temp. embeds weather data.
     @commands.command()
-    async def temp(self, ctx, city_arg, country_arg=""): 
+    async def temp(self, ctx, city_arg, country_arg=""):
         if country_arg == "":
             await ctx.send("No country argument! The location may be incorrect as a result.")
            
@@ -295,21 +306,35 @@ class temp(commands.Cog):
             await ctx.send("Another day another ~~dollar~~ weather request!")
 
             print("Sucessful!")
-        
+    
+    # Makes London,CA embed every 30 minutes for caching
+    @tasks.loop(seconds=1800.0)
+    async def test(self):
+        print("[Loop] Making London,CA Embed...")
+        global embed 
+        embed = make_embed("", "CA")
+
+        # Changes channel name to display temperature stats readily only if requested city is London, ON (new feature: 03/12)
+        print("[Loop] Changing Channel Status")
+        channel = self.client.get_channel(822198652398600242)
+        await channel.edit(name=str(embed[1]) + chr(176) + "C" + " | " + str(embed[2]))
+      
     # Error for missing city argument.
     @temp.error
     async def temp_error(self, ctx, error):
+        # If loop hasn't been started yet...detects by checking if embed is there
+        if embed == ():
+            print("[London] Loop hasn't been started yet! Starting...")
+            self.test.start()
+        else:
+            print("[London] Loop is already on! Sending latest fetched data!")
+
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Wouldn't you like to know, Weather Boi? Wait, aren't I the Weather Boi?")
+            await ctx.send(embed=embed[0]) # sends cached embed
 
-            data_and_embed = make_embed("", "CA")
-            await ctx.send(embed=data_and_embed[0]) # sends embed
-
-            # Changes channel name to display temperature stats readily only if requested city is London, ON (new feature: 03/12) 
-            channel = self.client.get_channel(822198652398600242)
-            await channel.edit(name="Temperature: " + str(data_and_embed[1]) + chr(176) + "C")
-
-            print("Sucessful!")
+            print("Sucessfully sent cached embed!")
     
 def setup(client):
     client.add_cog(temp(client))
+
