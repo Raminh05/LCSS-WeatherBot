@@ -1,13 +1,13 @@
 import discord
 from discord.ext import commands
 import os
+from dotenv import load_dotenv
 
 client = commands.Bot(command_prefix = 'w/', description="") # Defines the command prefix to be "w/"
 
 # Gets API key
-with open(".env", encoding="utf-8") as f:
-    api_key = f.read()
-    f.close()
+load_dotenv()
+api_key = os.getenv("DISCORD_API_KEY")
 
 @client.command()
 async def load(ctx, extension):
@@ -19,7 +19,7 @@ async def unload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
 
 # Iterates through all filenames in the cogs directory to load all cogs.
-for filename in os.listdir("./cogs"):
+for filename in os.listdir("/home/pi/Desktop/Test/WeatherBot/cogs"):
     if filename.endswith(".py"):
         client.load_extension(f'cogs.{filename[:-3]}')
 
