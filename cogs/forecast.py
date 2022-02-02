@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import requests, json
 from disputils import BotEmbedPaginator
+from dotenv import load_dotenv
+import os
 
 # --- Start of commands section --- #
 class forecast(commands.Cog):
@@ -11,16 +13,18 @@ class forecast(commands.Cog):
 
     @commands.command()
     async def forecast(self, ctx, city, country=""):
-        # -- OWM and MapBox API KEY -- #
-        api_key = ""
-        api_key_geo = ""
+
+        # -- OWM API KEY -- #
+        load_dotenv()
+        api_key = os.getenv("OWM_API_KEY") # OWM Key
+        api_key_geo = os.getenv("MAPBOX_API_KEY") # Mapbox API Key
 
         # -- Get cords -- #
         if country == "":
             await ctx.send("No country detected. Location could be incorrect as a result.")
-            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?" + "&access_token=" + api_key_geo
+            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?" + "&access_token=pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
         else:
-            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?country=" + country + "&access_token=" + api_key_geo
+            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?country=" + country + "&access_token=" + "pk.eyJ1IjoiY2Fubm9saSIsImEiOiJja21udzZpN3AxeXJmMm9zN3BuZGR3aTE0In0.w62dorEJ-QKwtJSswhRVaQ"
 
         print("Mapbox URL: " + complete_url_geo) # debugging purposes
   
