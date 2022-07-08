@@ -11,10 +11,10 @@ class non_weather_commands(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         await self.client.change_presence(activity=discord.Game(name="with the weather")) # Bot ready > print message / send online message
-        channel = self.client.get_channel(789619349903507456) # Sends message to #bot-commands
+        channel = self.client.get_channel(745331414718742569)
         await channel.send("Online and ready to take commands.") 
         print('Bot is on!')
-    
+      
     # w/ping. Returns latency time.
     @commands.command()
     async def ping(self, ctx): # ctx = context, the function name == context. Applies elsewhere.
@@ -41,31 +41,46 @@ class non_weather_commands(commands.Cog):
         import platform
         platform_text = platform.platform()
         
-
         # -- embed variable -- #
         embedVar = discord.Embed(title="About Me:", description="MINIMUM WAGE BABY!!! Jk, I don't get paid.", color=0x0dbab1)
 
         embedVar.add_field(name="OS:", value=platform_text, inline=False)
-        embedVar.set_footer(text="My social security number is 420696969696969")
+        embedVar.set_footer(text="My social security number is: BR1ANMULR0NEYRULES")
       
         await ctx.send(embed=embedVar)
-
+    
     # w/refresh. Refresh cogs after modications.
     @commands.command()
     @commands.is_owner()
     async def refresh(self, ctx):
         try:
-            for filename in os.listdir("./cogs"):
+            path = os.getcwd()
+            for filename in os.listdir(path + "/cogs"):
                 if filename.endswith(".py"):
                     self.client.unload_extension(f'cogs.{filename[:-3]}')
                     self.client.load_extension(f'cogs.{filename[:-3]}')
                     print("Refreshed cog")
-            
+                    
             await ctx.message.delete()
             await ctx.send("All cogs reloaded!")
         except:
             await ctx.send("Unable to refresh cogs. An error has occured.")
 
+    @commands.command()
+    async def test(self, ctx):
+        await ctx.send("input something")
+        
+        try:
+            message = await client.wait_for("message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel, timeout=30.0)
+        except asyncio.TimeoutError:
+            await ctx.send("bruh why you badddddddddd")
+        else:
+            pass
+            if message.content.lower() == "stuff":
+                pass
+             
+        
+        
 def setup(client):
     client.add_cog(non_weather_commands(client))
         

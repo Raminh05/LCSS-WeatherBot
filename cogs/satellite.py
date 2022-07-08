@@ -14,11 +14,12 @@ class satellite(commands.Cog):
     @commands.command()
     async def satellite(self, ctx):
         embedVar = discord.Embed(title="Latest Satellite Imagery", description="Source: Environment Canada/NOAA", color=0xebd834)
-        wget.download("https://weather.gc.ca/data/satellite/goes_nam_1070_100.jpg", "satellite.jpg")
-        file = discord.File("satellite.jpg")
-        embedVar.set_image(url="attachment://satellite.jpg")
+        path = os.getcwd() + "satellite.jpg"
+        wget.download("https://weather.gc.ca/data/satellite/goes_nam_1070_100.jpg", path)
+        file = discord.File(path, filename="image.png")
+        embedVar.set_image(url="attachment://image.png")
         await ctx.send(file = file, embed=embedVar)
-        os.remove("satellite.jpg")
+        os.remove(path)
         await ctx.message.delete()
     
 def setup(client):

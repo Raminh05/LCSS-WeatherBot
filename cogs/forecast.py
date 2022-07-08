@@ -22,7 +22,7 @@ class forecast(commands.Cog):
         # -- Get cords -- #
         if country == "":
             await ctx.send("No country detected. Location could be incorrect as a result.")
-            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?" + "&access_token=" + api_key_geo
+            complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?" + "&access_token=" + api_key_geo  
         else:
             complete_url_geo = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + city + ".json?country=" + country + "&access_token=" + api_key_geo
 
