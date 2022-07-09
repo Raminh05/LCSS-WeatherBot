@@ -28,7 +28,7 @@ def bruh(SPORTS_KEY):
 
     data = x["response"]
     embedList = []
-    embed_title = "Hockey Matches for Today"
+    embed_title = "Hockey Matches for Today - " + date 
 
     for game in data:
         game_title = game['teams']['home']['name'] + " vs. " + game['teams']['away']['name']
@@ -49,6 +49,7 @@ def bruh(SPORTS_KEY):
         embed.set_footer(text="Game starts at: " + time + " EST")
         embed.set_image(url=home_team_logo)
         embedList.append(embed)
+  
         
     return embedList
 
@@ -59,9 +60,20 @@ class hockey(commands.Cog):
     
     @commands.command()
     async def hockey(self, ctx):
-        embedList = bruh(SPORTS_KEY)
-        paginator = BotEmbedPaginator(ctx, embedList)
-        await paginator.run()
+        try:
+            embedList = bruh(SPORTS_KEY)
+            paginator = BotEmbedPaginator(ctx, embedList)
+            await paginator.run()
+        except:
+            print("[Hockey] Something went wrong while assembling embedList")
+            embed = discord.Embed (
+                title = "No games available at the moment!",
+                description = "Could well be the API or my code just dying idk",
+                colour = discord.Colour.orange()
+            )
+            await ctx.send(embed=embed) # Sends out sorry message
+
+        
         await ctx.message.delete()
 
 def setup(client):
