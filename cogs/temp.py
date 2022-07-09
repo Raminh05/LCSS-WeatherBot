@@ -1,9 +1,7 @@
-
 import discord
 from discord.ext import commands, tasks
 import requests, json
 from datetime import datetime
-from urllib.request import urlopen as uRequest
 from bs4 import BeautifulSoup as soup
 from requests import api
 from dotenv import load_dotenv
@@ -95,9 +93,8 @@ def parse_response(owm_response, is_london):
 # -- Fetches high and low temperature for London, ON -- #
 def get_high_low_london():
     data_url = "https://weather.gc.ca/city/pages/on-137_metric_e.html"
-    uClient = uRequest(data_url)
-    page_html = uClient.read()
-    page_soup = soup(page_html, "html.parser") # Parses the HTML elements 
+    response = requests.get(data_url)
+    page_soup = soup(response.content, "html.parser") # Parses the HTML elements 
     container = page_soup.find("div",{"id":"container"}) # Finds container div
 
     alert_banner = page_soup.find("div",{"class":"row alert-item bg-alerts"}) # Alert_banner element
@@ -147,10 +144,11 @@ def make_embed(city_arg, country_arg):
         wind_spd = data[3]
         # wind_gst = data[4] # Wind gust broken
         wind_deg = data[4] # temporairly index 4 as windgust is broken
-        temp_low = get_high_low_london()[0]
-        temp_high = get_high_low_london()[1]
-        alert = get_high_low_london()[2]
-        humidex = get_high_low_london()[3]
+        env_can_data = get_high_low_london()
+        temp_low = env_can_data[0]
+        temp_high = env_can_data[1]
+        alert = env_can_data[2]
+        humidex = env_can_data[3]
 
     # -- If OWM doesn't have the city, fall back to Mapbox for geocoding. -- #
     else:
@@ -172,6 +170,7 @@ def make_embed(city_arg, country_arg):
             else:
                 print("Sucessfully skipped Mapbox.")
 
+        print(x)
         data = parse_response(x, False)
 
         condition = data[0].title() # Gets weather condition from json data
@@ -239,7 +238,7 @@ def make_embed(city_arg, country_arg):
         else:
             embedVar.add_field(name="Weather Alert", value=alert + ' [More info](https://weather.gc.ca/city/pages/on-137_metric_e.html)', inline=False)
             
-        embedVar.add_field(name="Temperature | Humidex:", value=str(temp) + chr(176) + "C" " | " + humidex, inline=False)
+        embedVar.add_field(name="Temperature | Wind Chill:", value=str(temp) + chr(176) + "C" " | " + humidex, inline=False)
         embedVar.set_image(url=image_url)
         embedVar.add_field(name="Condition", value=condition, inline=False)
         embedVar.add_field(name="Current Wind Speed:", value=str(round(wind_spd * 3.6, 2)) + " km/h [" + wind_dir + "]", inline=False)
@@ -256,6 +255,7 @@ def make_embed(city_arg, country_arg):
 
         return embedVar, temp, condition
 
+    # -- If not London, Ontario essemble different looking embed -- #
     else:
         # -- Essembles embed from data -- #
         print("Attempting to asssemble embed for + city_arg!")
@@ -292,7 +292,6 @@ class temp(commands.Cog):
             data_pack = make_embed(city_arg, country_arg) # tuple for city_name, embedVar, response_code
         except:
             print("Failed to receive data pack from make_embed")
-            await ctx.send("Error: Could not find information for that location")
         finally:
             city_name = data_pack[1]
 
