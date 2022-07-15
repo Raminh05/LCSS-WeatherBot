@@ -136,6 +136,7 @@ def make_embed(city_arg, country_arg):
     if city_arg == "":
         is_london = True
         x = get_response_owm("http://api.openweathermap.org/data/2.5/weather?q=London,%20CA&units=metric&appid=" + api_key)
+        print("http://api.openweathermap.org/data/2.5/weather?q=London,%20CA&units=metric&appid=" + api_key)
         data = parse_response(x, is_london) # Converts json data
 
         condition = data[0].title() # Gets weather condition from json data
