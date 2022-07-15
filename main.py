@@ -8,7 +8,7 @@ path = os.getcwd()
 
 # Gets API key
 load_dotenv()
-api_key = os.getenv("DISCORD_API_KEY")
+api_key = os.environ.get("DISCORD_API_KEY")
 
 # Load cogs
 @client.command()

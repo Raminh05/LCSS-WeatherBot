@@ -9,7 +9,7 @@ from datetime import datetime
 
 # -- API KEYS -- #
 load_dotenv()
-SPORTS_KEY = os.getenv("SPORTS_API_KEY")
+SPORTS_KEY = os.environ.get("SPORTS_API_KEY")
 now = datetime.now()
 date = now.strftime("%Y-%m-%d")
 

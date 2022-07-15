@@ -9,8 +9,8 @@ import os
 
 # -- Variable declaration -- #
 load_dotenv()
-api_key = os.getenv("OWM_API_KEY") # OWM Key
-api_key_geo = os.getenv("MAPBOX_API_KEY") # Mapbox API Key
+api_key = os.environ.get("OWM_API_KEY") # OWM Key
+api_key_geo = os.environ.get("MAPBOX_API_KEY") # Mapbox API Key
 base_url_city = "http://api.openweathermap.org/data/2.5/weather?" 
 base_url_geocode = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
 embed = () # Declaring embed variable for caching London,CA data

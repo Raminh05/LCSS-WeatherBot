@@ -16,8 +16,8 @@ class forecast(commands.Cog):
 
         # -- OWM API KEY -- #
         load_dotenv()
-        api_key = os.getenv("OWM_API_KEY") # OWM Key
-        api_key_geo = os.getenv("MAPBOX_API_KEY") # Mapbox API Key
+        api_key = os.environ.get("OWM_API_KEY") # OWM Key
+        api_key_geo = os.environ.get("MAPBOX_API_KEY") # Mapbox API Key
 
         # -- Get cords -- #
         if country == "":
