@@ -1,9 +1,9 @@
-import discord
+import discord, requests, json, os
 from discord.ext import commands
-import requests, json
+from discord import app_commands
 from disputils import BotEmbedPaginator
 from dotenv import load_dotenv
-import os
+
 
 # --- Start of commands section --- #
 class forecast(commands.Cog):
@@ -11,7 +11,8 @@ class forecast(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @commands.hybrid_command(name = "forecast", description = "Gathers 7-day weather forecast for a specified location.")
+    @app_commands.guilds(discord.Object(id = 783415814342574151))
     async def forecast(self, ctx, city, country=""):
 
         # -- OWM API KEY -- #
@@ -92,5 +93,5 @@ class forecast(commands.Cog):
            
             
     
-def setup(client):
-    client.add_cog(forecast(client))
+async def setup(client):
+    await client.add_cog(forecast(client))

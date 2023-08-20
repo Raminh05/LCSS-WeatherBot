@@ -57,8 +57,8 @@ class non_weather_commands(commands.Cog):
         try:
             for filename in os.listdir("./cogs"):
                 if filename.endswith(".py"):
-                    self.client.unload_extension(f'cogs.{filename[:-3]}')
-                    self.client.load_extension(f'cogs.{filename[:-3]}')
+                    await self.client.unload_extension(f'cogs.{filename[:-3]}')
+                    await self.client.load_extension(f'cogs.{filename[:-3]}')
                     print("Refreshed cog")
             
             await ctx.message.delete()
@@ -66,6 +66,6 @@ class non_weather_commands(commands.Cog):
         except:
             await ctx.send("Unable to refresh cogs. An error has occured.")
 
-def setup(client):
-    client.add_cog(non_weather_commands(client))
+async def setup(client):
+    await client.add_cog(non_weather_commands(client))
         

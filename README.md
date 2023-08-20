@@ -1,5 +1,5 @@
 **LCSS-WeatherBot**
-It's a weather bot, that runs in a Discord server! Gathers data from Environment Canada.
+It's a weather bot, that runs in a Discord server! Gathers data from Environment Canada and OpenWeatherMap.
 
 Planned Features:
 - Fix the UX (optimization, make country and city args OPTIONAL)

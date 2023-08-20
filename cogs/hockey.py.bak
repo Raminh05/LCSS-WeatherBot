@@ -76,8 +76,8 @@ class hockey(commands.Cog):
         
         await ctx.message.delete()
 
-def setup(client):
-    client.add_cog(hockey(client))
+async def setup(client):
+    await client.add_cog(hockey(client))
 
 
 

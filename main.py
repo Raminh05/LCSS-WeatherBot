@@ -1,36 +1,40 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
+import asyncio
 import os
 from dotenv import load_dotenv
 
-client = commands.Bot(command_prefix = 'w/', description="") # Defines the command prefix to be "w/"
-path = os.getcwd()
+PATH= os.getcwd()
 
 # Gets API key
 load_dotenv()
-api_key = os.getenv("DISCORD_API_KEY")
+API_KEY = os.getenv("DISCORD_API_KEY")
 
-# Load cogs
-@client.command()
-async def load(ctx, extension):
-    client.load_extension(f'cogs.{extension}')
-    await ctx.send("Kelcogg's ")
+class Client(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True
+        super().__init__(command_prefix = "w/", intents = intents)
+        
+    async def setup_hook(self):
+        await self.tree.sync(guild = discord.Object(id = 783415814342574151))
+            
 
-# Unload cogs
-@client.command()
-async def unload(ctx, extension):
-    client.unload_extension(f'cogs.{extension}')
+client = Client()
 
-# Iterates through all filenames in the cogs directory to load all cogs.
-for filename in os.listdir(path + "/cogs"):
-    if filename.endswith(".py"):
-        client.load_extension(f'cogs.{filename[:-3]}')
+async def load():
+    for file in os.listdir('./cogs'):
+        if file.endswith('.py'):
+            await client.load_extension(f'cogs.{file[:-3]}')
 
-client.run(api_key)
+async def main():
+    await load()
+    await client.start(API_KEY)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 
 
-# Uncomment and re-implement to def temp if need be.
- # if condition == "Mostly Cloudy":
-        #await ctx.send("The temperature is " + temp + " in London, Ontario. Condition: " + condition + " with a chance of meatballs") # Just for movie fun!
-    #else:
-        #await ctx.send("The temperature is " + temp + " in London, Ontario. Condition: " + condition)
+
+

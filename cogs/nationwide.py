@@ -28,5 +28,5 @@ class nationwide(commands.Cog):
         finally:
             await ctx.message.delete()
     
-def setup(client):
-    client.add_cog(nationwide(client))
+async def setup(client):
+    await client.add_cog(nationwide(client))

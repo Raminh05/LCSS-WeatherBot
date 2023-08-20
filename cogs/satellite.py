@@ -21,5 +21,5 @@ class satellite(commands.Cog):
         os.remove("satellite.jpg")
         await ctx.message.delete()
     
-def setup(client):
-    client.add_cog(satellite(client))
+async def setup(client):
+    await client.add_cog(satellite(client))
